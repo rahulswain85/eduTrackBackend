@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import jwt from "json-web-token";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const studentSchema = new Schema(
@@ -49,12 +49,11 @@ studentSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
-      fullname: this.fullname,
+      name: this.name,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '1d',
     },
   );
 };
@@ -66,7 +65,7 @@ studentSchema.methods.generateRefreshToken = function () {
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d',
     },
   );
 };

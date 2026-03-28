@@ -27,6 +27,6 @@ const taskSchema = new Schema({
         enum: ['High', 'Low', 'Medium'],
         required: true
     }
-});
+}, { timestamps: true });
 
 export const Task = mongoose.model('Task', taskSchema);
