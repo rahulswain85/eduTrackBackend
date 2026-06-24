@@ -132,6 +132,72 @@ export const updateTaskPriority = async (req, res) => {
   }
 };
 
+export const updateTaskDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const incomingTitle = req.body.taskTitle ?? req.body.title;
+    const incomingDueDate = req.body.taskDueDate ?? req.body.dueDate;
+
+    const update = {};
+
+    if (incomingTitle !== undefined) {
+      if (typeof incomingTitle !== 'string' || incomingTitle.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Task title must be a non-empty string',
+        });
+      }
+      update.taskTitle = incomingTitle.trim();
+    }
+
+    if (incomingDueDate !== undefined) {
+      if (incomingDueDate === null || incomingDueDate === '') {
+        update.taskDueDate = null;
+      } else {
+        const parsed = new Date(incomingDueDate);
+        if (Number.isNaN(parsed.getTime())) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid due date',
+          });
+        }
+        update.taskDueDate = parsed;
+      }
+    }
+
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid fields to update',
+      });
+    }
+
+    const task = await Task.findOneAndUpdate(
+      { _id: id, student: req.user._id },
+      update,
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Task updated successfully',
+      task,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update task',
+    });
+  }
+};
+
 export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;

@@ -4,6 +4,7 @@ import {
   getTasks,
   updateTaskStatus,
   updateTaskPriority,
+  updateTaskDetails,
   deleteTask,
 } from '../../controllers/task.controller.js';
 import { verifyToken } from '../../middlewares/middleware.js';
@@ -15,7 +16,7 @@ router.use(verifyToken);
 router.route('/').get(getTasks).post(createTask);
 router.route('/:id/status').patch(updateTaskStatus);
 router.route('/:id/priority').patch(updateTaskPriority);
-router.route('/:id').delete(deleteTask);
+router.route('/:id').patch(updateTaskDetails).delete(deleteTask);
 
 
 export default router;
